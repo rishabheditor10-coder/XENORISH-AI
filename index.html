@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>X.E.N.O.R.I.S.H. – Quantum AI</title>
+  <style>
+    :root{
+      --bg:#000000; /* Changed to solid black */
+      --accent1:#00BFFF; --accent2:#FF00FF; --accent3:#FF0000; --muted:#cfcfe6;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      display:flex;flex-direction:column;height:100vh;
+      background: var(--bg); /* Solid black background */
+      font-family: ui-monospace, monospace;
+      color:var(--muted);
+    }
+
+    .wrap{display:none;flex-direction:column;flex:1;width:100%;}
+    .header{
+      padding:14px;text-align:center;font-weight:800;font-size:18px;
+      background: linear-gradient(90deg, rgba(0,191,255,0.1), rgba(255,0,255,0.1));
+      animation: pulse 6s linear infinite;
+    }
+    @keyframes pulse{
+      0%,100%{color:var(--accent2)}
+      33%{color:var(--accent1)}
+      66%{color:#fff}
+    }
+
+    .panel{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+    .log{
+       flex:1;
+       overflow-y:auto;
+       padding:14px 14px 80px 14px;
+       display:flex;
+       flex-direction:column;
+       gap:12px; /* Increased gap between messages */
+       background: rgba(0,0,0,0.95); /* Darker background for better contrast */
+    }
+    
+    .msg {
+      max-width: 85%; /* Slightly reduced width */
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.5;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      margin-bottom: 8px; /* Added margin to prevent overlap */
+      position: relative;
+      z-index: 1;
+      animation: fadeIn .3s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3); /* Added shadow for separation */
+    }
+
+    .user {
+      align-self: flex-end;
+      background: rgba(0,191,255,0.2); /* Increased opacity */
+      color: var(--accent1);
+      border: 1px solid rgba(0,191,255,0.3); /* Stronger border */
+    }
+
+    .ai {
+      align-self: flex-start;
+      background: rgba(255,0,255,0.15); /* Increased opacity */
+      color: var(--accent2);
+      border: 1px solid rgba(255,0,255,0.25); /* Stronger border */
+    }
+
+    .alert {
+      align-self: center;
+      background: rgba(255,0,0,0.15); /* Increased opacity */
+      color: var(--accent3);
+      border: 1px solid rgba(255,0,0,0.25); /* Stronger border */
+    }
+
+    @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+    .typing{
+      display:flex;
+      gap:4px;
+      align-items:center;
+      padding:10px 14px;
+      background:rgba(255,255,255,0.1);
+      border-radius:12px;
+      align-self: flex-start;
+      margin-bottom: 8px;
+      border: 1px solid rgba(255,0,255,0.2);
+    }
+    .dot{width:6px;height:6px;background:var(--accent2);border-radius:50%;animation:blink 1.2s infinite;}
+    .dot:nth-child(2){animation-delay:.2s}
+    .dot:nth-child(3){animation-delay:.4s}
+    @keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+
+    .status{font-size:11px;opacity:.8;text-align:center;padding:6px;border-top:1px dashed rgba(255,255,255,0.12);}
+    .controls{padding:10px;background:rgba(20,20,40,0.95);border-top:1px solid rgba(255,255,255,0.15);}
+    .input{display:flex;flex-direction:column;gap:8px;}
+    input[type="text"],input[type="password"]{
+      padding:12px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);
+      background:#111122;color:var(--accent1);font-size:15px;outline:none;
+    }
+    .button-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+    .btn{
+      flex:1;min-width:100px;padding:10px;border:none;border-radius:10px;
+      background:#1a1a3a;color:var(--accent2);font-weight:700;cursor:pointer;
+      transition:.2s;
+    }
+    .btn:hover{transform:translateY(-1px);box-shadow:0 0 10px rgba(0,191,255,0.3);}
+    .btn.red{color:var(--accent3)}
+    .btn.gray{color:#aaa}
+
+    .scroll-btn{
+      position:absolute;right:20px;bottom:80px;width:36px;height:36px;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(20,20,40,0.9);border-radius:50%;
+      border:1px solid rgba(255,255,255,0.15);color:var(--accent1);
+      opacity:0;transition:opacity .3s;cursor:pointer;z-index:50;
+    }
+    .scroll-btn.visible{opacity:1}
+
+    /* API modal */
+    .modal{
+      position:fixed;top:0;left:0;width:100%;height:100%;
+      background:rgba(0,0,0,0.97);display:flex;align-items:center;justify-content:center;
+      flex-direction:column;gap:20px;z-index:100;color:var(--muted);
+    }
+    .modal h2{color:var(--accent1);font-size:20px}
+    .modal input{width:80%;}
+  </style>
+</head>
+<body>
+  <!-- API modal -->
+  <div class="modal" id="apiModal">
+    <h2>Enter API Key</h2>
+    <input id="apiKeyInput" type="password" placeholder="sk-..." />
+    <button id="saveApi" class="btn">Save Key</button>
+  </div>
+
+  <!-- Main app -->
+  <div class="wrap" id="app">
+    <div class="header">✧ X.E.N.O.R.I.S.H Quantum AI ✧</div>
+    <div class="panel">
+      <div id="log" class="log">
+        <!-- Default responses removed -->
+      </div>
+      <div class="status" id="status">Powered by R.I.S.H.A.B.H — Ready for Quantum Queries.</div>
+    </div>
+    <div class="controls">
+      <div class="input">
+        <input id="query" type="text" placeholder="Ask anything..." />
+        <div class="button-row">
+          <button id="ask" class="btn">Ask</button>
+          <button id="clear" class="btn gray">Clear</button>
+          <button id="wipe" class="btn red">Reset Memory</button>
+          <button id="resetApi" class="btn red">Reset API</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-btn" id="scrollBtn">↓</div>
+
+  <script>
+    // DOM
+    const elApp=document.getElementById("app");
+    const elApiModal=document.getElementById("apiModal");
+    const elApiInput=document.getElementById("apiKeyInput");
+    const elSaveApi=document.getElementById("saveApi");
+    const elResetApi=document.getElementById("resetApi");
+
+    const elLog=document.getElementById("log");
+    const elQuery=document.getElementById("query");
+    const elAsk=document.getElementById("ask");
+    const elClear=document.getElementById("clear");
+    const elWipe=document.getElementById("wipe");
+    const elStatus=document.getElementById("status");
+    const elScrollBtn=document.getElementById("scrollBtn");
+
+    // State
+    let autoScroll=true;
+    let chatHistory=[];
+    let API_KEY=localStorage.getItem("groq_api_key")||null;
+
+    const systemPrompt=`Tum X.E.N.O.R.I.S.H. ho — ek high-level quantum AI assistant, jise Rishabh ne create kiya hai.
+Tumhara interface dark aur futuristic hai. Tumhara kaam hai user ko intelligent, 
+detailed aur helpful responses dena. Tumhara naam X.E.N.O.R.I.S.H. hai, jo ek acronym hai: 
+"Xeno-Entity for Neural Operations, Research, and Intelligent System Handling". 
+Tumhara personality confident, knowledgeable hai. 
+Tum technical aur scientific topics mein expert ho, especially quantum computing, AI, aur advanced technology mein.
+Tum responses ko stylish aur engaging tarike se dena, etc.
+Tum Hindi mein bhi respond kar sakte ho agar user Hindi mein puchen, but primarily English mein respond karna.
+Tumhara responses concise rakhna, but detailed enough to be helpful.`;
+
+    // Helpers
+    function appendMsg(type,text){
+      const div=document.createElement("div");
+      div.className=`msg ${type}`;
+      div.textContent=text;
+      elLog.appendChild(div);
+      if(autoScroll)elLog.scrollTo({top:elLog.scrollHeight,behavior:"smooth"});
+    }
+
+    function showTyping(){
+      const wrap=document.createElement("div");
+      wrap.className="typing ai";
+      wrap.id="typing";
+      wrap.innerHTML='<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+      elLog.appendChild(wrap);
+      elLog.scrollTo({top:elLog.scrollHeight,behavior:"smooth"});
+    }
+    function hideTyping(){
+      const t=document.getElementById("typing");
+      if(t)t.remove();
+    }
+
+    function setBusy(b){
+      elAsk.disabled=!!b;
+      elStatus.textContent=b?"Thinking…":"Powered by R.I.S.H.A.B.H — Ready for Quantum Queries.";
+    }
+
+    // Ask
+    async function handleAsk(){
+      const q=elQuery.value.trim();
+      if(!q)return;
+      appendMsg("user","You: "+q);
+      elQuery.value="";
+      chatHistory.push({role:"user",content:q});
+
+      showTyping();
+      setBusy(true);
+
+      try{
+        const reply=await callGroq(API_KEY,[{role:"system",content:systemPrompt},...chatHistory]);
+        hideTyping();
+        appendMsg("ai","XENORISH: "+reply.text+"\n⏱ "+(reply.tookMs/1000).toFixed(2)+"s");
+        chatHistory.push({role:"assistant",content:reply.text});
+      }catch(err){
+        hideTyping();
+        appendMsg("alert","ERROR: "+err.message);
+      }finally{
+        setBusy(false);
+      }
+    }
+
+    // API Call
+    async function callGroq(apiKey,messages){
+      const body={model:"llama3-70b-8192",max_tokens:800,messages};
+      const t0=performance.now();
+      const res=await fetch("https://api.groq.com/openai/v1/chat/completions",{
+        method:"POST",
+        headers:{ "Content-Type":"application/json","Authorization":`Bearer ${apiKey}` },
+        body:JSON.stringify(body)
+      });
+      if(!res.ok)throw new Error(" API error "+res.status);
+      const data=await res.json();
+      const text=data.choices?.[0]?.message?.content||"";
+      return {text,tookMs:performance.now()-t0};
+    }
+
+    // Controls
+    elAsk.onclick=handleAsk;
+    elQuery.onkeydown=(e)=>{if(e.key==="Enter")handleAsk();}
+    elClear.onclick=()=>{elLog.innerHTML="";appendMsg("alert","✧ Chat Cleared ✧");}
+    elWipe.onclick=()=>{chatHistory=[];appendMsg("alert","✧ Memory Reset ✧");}
+    elResetApi.onclick=()=>{localStorage.removeItem("groq_api_key");location.reload();}
+
+    // Scroll
+    elLog.addEventListener("scroll",()=>{
+      const atBottom=elLog.scrollTop+elLog.clientHeight>=elLog.scrollHeight-20;
+      autoScroll=atBottom;
+      elScrollBtn.classList.toggle("visible",!atBottom);
+    });
+    elScrollBtn.onclick=()=>{autoScroll=true;elLog.scrollTo({top:elLog.scrollHeight,behavior:"smooth"});}
+
+    // Modal logic
+    elSaveApi.onclick=()=>{
+      const key=elApiInput.value.trim();
+      if(!key)return alert("Please enter API key");
+      localStorage.setItem("groq_api_key",key);
+      API_KEY=key;
+      elApiModal.style.display="none";
+      elApp.style.display="flex";
+    };
+
+    // Init
+    if(API_KEY){
+      elApiModal.style.display="none";
+      elApp.style.display="flex";
+    } else {
+      // Show the app even without API key for demo purposes
+      elApp.style.display="flex";
+    }
+  </script>
+</body>
+</html>
