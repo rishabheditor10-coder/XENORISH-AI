@@ -6,75 +6,141 @@
   <title>X.E.N.O.R.I.S.H. – Quantum AI</title>
   <style>
     :root{
-      --bg:#000000; /* Changed to solid black */
-      --accent1:#00BFFF; --accent2:#FF00FF; --accent3:#FF0000; --muted:#cfcfe6;
+      --bg:#000000;
+      --accent1:#00BFFF; --accent2:#0066ff; --accent3:#FF0000; --muted:#cfcfe6;
+      --neon: #0ff; /* Neon color */
+      --control-bg: rgba(10, 10, 30, 0.85);
+      --control-border: rgba(0, 191, 255, 0.4);
+      --control-glow: rgba(0, 102, 255, 0.7);
     }
     *{box-sizing:border-box;margin:0;padding:0}
     html,body{height:100%}
     body{
-      display:flex;flex-direction:column;height:100vh;
-      background: var(--bg); /* Solid black background */
+      display:flex;flex-direction:column;
+      background: var(--bg);
       font-family: ui-monospace, monospace;
       color:var(--muted);
+      margin: 0;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
     }
 
-    .wrap{display:none;flex-direction:column;flex:1;width:100%;}
-    .header{
-      padding:14px;text-align:center;font-weight:800;font-size:18px;
-      background: linear-gradient(90deg, rgba(0,191,255,0.1), rgba(255,0,255,0.1));
-      animation: pulse 6s linear infinite;
+    .wrap{
+      display:none;
+      flex-direction:column;
+      height: 100vh;
+      width:100%;
     }
+    
+    /* Fixed header */
+    .header{
+      padding:14px;
+      text-align:center;
+      font-weight:800;
+      font-size:18px;
+      background: #000000;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      animation: pulse 6s linear infinite;
+      border-bottom: 2px solid transparent;
+      background-image: linear-gradient(black, black), 
+                        linear-gradient(90deg, rgba(0,191,255,0.5), rgba(0,102,255,0.5));
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+    }
+    
+    /* New Powered by Rishabh header - Updated to neon color */
+    .powered-by {
+      position: fixed;
+      top: 52px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 14px;
+      padding: 6px;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 99;
+      color: var(--neon); /* Changed to neon color */
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-shadow: 0 0 5px var(--neon), 0 0 10px var(--neon);
+    }
+    
     @keyframes pulse{
       0%,100%{color:var(--accent2)}
       33%{color:var(--accent1)}
       66%{color:#fff}
     }
 
-    .panel{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+    .panel-container {
+      margin-top: 80px; /* Increased to accommodate the new header */
+      height: calc(100vh - 80px); /* Adjusted height */
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel{
+      flex: 1;
+      display:flex;
+      flex-direction:column;
+      overflow: hidden;
+    }
+    
     .log{
-       flex:1;
-       overflow-y:auto;
-       padding:14px 14px 80px 14px;
+       flex: 1;
+       overflow-y: auto;
+       padding: 14px 14px 100px 14px;
        display:flex;
        flex-direction:column;
-       gap:12px; /* Increased gap between messages */
-       background: rgba(0,0,0,0.95); /* Darker background for better contrast */
+       gap:12px;
+       background: rgba(0,0,0,0.95);
+       -webkit-overflow-scrolling: touch; /* Enables smooth scrolling on iOS */
+       overscroll-behavior: contain; /* Prevents overscroll glow on mobile */
     }
     
     .msg {
-      max-width: 85%; /* Slightly reduced width */
+      max-width: 85%;
       padding: 12px 16px;
       border-radius: 14px;
-      font-size: 14px;
+      font-size: 16px; /* Increased from 14px to 16px */
       line-height: 1.5;
       word-wrap: break-word;
       white-space: pre-wrap;
-      margin-bottom: 8px; /* Added margin to prevent overlap */
+      margin-bottom: 8px;
       position: relative;
       z-index: 1;
       animation: fadeIn .3s ease;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3); /* Added shadow for separation */
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      -webkit-user-select: text;
+      user-select: text;
     }
 
     .user {
       align-self: flex-end;
-      background: rgba(0,191,255,0.2); /* Increased opacity */
+      background: rgba(0,191,255,0.2);
       color: var(--accent1);
-      border: 1px solid rgba(0,191,255,0.3); /* Stronger border */
+      border: 1px solid rgba(0,191,255,0.3);
     }
 
     .ai {
       align-self: flex-start;
-      background: rgba(255,0,255,0.15); /* Increased opacity */
-      color: var(--accent2);
-      border: 1px solid rgba(255,0,255,0.25); /* Stronger border */
+      background: rgba(0,102,255,0.15);
+      color: #00BFFF; /* Changed to bold blue */
+      font-weight: bold; /* Made bold */
+      border: 1px solid rgba(0,102,255,0.25);
     }
 
     .alert {
       align-self: center;
-      background: rgba(255,0,0,0.15); /* Increased opacity */
+      background: rgba(255,0,0,0.15);
       color: var(--accent3);
-      border: 1px solid rgba(255,0,0,0.25); /* Stronger border */
+      border: 1px solid rgba(255,0,0,0.25);
     }
 
     @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
@@ -88,47 +154,225 @@
       border-radius:12px;
       align-self: flex-start;
       margin-bottom: 8px;
-      border: 1px solid rgba(255,0,255,0.2);
+      border: 1px solid rgba(0,102,255,0.2);
     }
     .dot{width:6px;height:6px;background:var(--accent2);border-radius:50%;animation:blink 1.2s infinite;}
     .dot:nth-child(2){animation-delay:.2s}
     .dot:nth-child(3){animation-delay:.4s}
     @keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
 
-    .status{font-size:11px;opacity:.8;text-align:center;padding:6px;border-top:1px dashed rgba(255,255,255,0.12);}
-    .controls{padding:10px;background:rgba(20,20,40,0.95);border-top:1px solid rgba(255,255,255,0.15);}
-    .input{display:flex;flex-direction:column;gap:8px;}
-    input[type="text"],input[type="password"]{
-      padding:12px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);
-      background:#111122;color:var(--accent1);font-size:15px;outline:none;
+    .status{
+      font-size:11px;
+      opacity:.8;
+      text-align:center;
+      padding:6px;
+      border-top:1px dashed rgba(255,255,255,0.12);
+      height: 30px;
     }
-    .button-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
-    .btn{
-      flex:1;min-width:100px;padding:10px;border:none;border-radius:10px;
-      background:#1a1a3a;color:var(--accent2);font-weight:700;cursor:pointer;
-      transition:.2s;
+    
+    /* MODERNIZED CONTROLS */
+    .controls-container {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: var(--control-bg);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--control-border);
+      box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      padding: 15px;
+      transition: all 0.3s ease;
     }
-    .btn:hover{transform:translateY(-1px);box-shadow:0 0 10px rgba(0,191,255,0.3);}
-    .btn.red{color:var(--accent3)}
-    .btn.gray{color:#aaa}
 
-    .scroll-btn{
-      position:absolute;right:20px;bottom:80px;width:36px;height:36px;
-      display:flex;align-items:center;justify-content:center;
-      background:rgba(20,20,40,0.9);border-radius:50%;
-      border:1px solid rgba(255,255,255,0.15);color:var(--accent1);
-      opacity:0;transition:opacity .3s;cursor:pointer;z-index:50;
+    .controls-container:hover {
+      background: rgba(15, 15, 35, 0.9);
+      border-top: 1px solid rgba(0, 191, 255, 0.6);
     }
-    .scroll-btn.visible{opacity:1}
+    
+    .controls{
+      max-width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .input{
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    input[type="text"], input[type="password"]{
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--control-border);
+      background: rgba(15, 15, 35, 0.7);
+      color: var(--accent1);
+      font-size: 15px;
+      outline: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px rgba(0, 102, 255, 0.1);
+    }
+    
+    input[type="text"]:focus, input[type="password"]:focus {
+      border-color: var(--accent1);
+      box-shadow: 0 0 20px var(--control-glow);
+      transform: translateY(-2px);
+    }
+    
+    .button-row{
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .btn{
+      flex: 1;
+      min-width: 100px;
+      padding: 12px 18px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(145deg, rgba(20, 20, 50, 0.8), rgba(10, 10, 30, 0.8));
+      color: var(--accent1);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 191, 255, 0.2), transparent);
+      transition: all 0.5s ease;
+    }
+    
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 102, 255, 0.4);
+    }
+    
+    .btn:hover::before {
+      left: 100%;
+    }
+    
+    .btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 10px rgba(0, 102, 255, 0.3);
+    }
+    
+    .btn.red{
+      color: var(--accent3);
+      background: linear-gradient(145deg, rgba(50, 20, 20, 0.8), rgba(30, 10, 10, 0.8));
+    }
+    
+    .btn.red:hover {
+      box-shadow: 0 8px 25px rgba(255, 0, 0, 0.4);
+    }
+    
+    .btn.gray{
+      color: #aaa;
+      background: linear-gradient(145deg, rgba(30, 30, 40, 0.8), rgba(20, 20, 30, 0.8));
+    }
+    
+    /* Scroll button */
+    .scroll-btn{
+      position:fixed;
+      right:20px;
+      bottom: 160px;
+      width:40px;
+      height:40px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(20,20,40,0.9);
+      backdrop-filter: blur(5px);
+      border-radius:50%;
+      border:1px solid var(--control-border);
+      color:var(--accent1);
+      opacity:0;
+      transition: all 0.3s ease;
+      cursor:pointer;
+      z-index:50;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .scroll-btn.visible{
+      opacity:1;
+    }
+    
+    .scroll-btn:hover {
+      transform: scale(1.1);
+      background: rgba(30,30,60,0.95);
+      box-shadow: 0 0 15px var(--control-glow);
+    }
 
     /* API modal */
     .modal{
       position:fixed;top:0;left:0;width:100%;height:100%;
       background:rgba(0,0,0,0.97);display:flex;align-items:center;justify-content:center;
-      flex-direction:column;gap:20px;z-index:100;color:var(--muted);
+      flex-direction:column;gap:20px;z-index:1000;color:var(--muted);
     }
     .modal h2{color:var(--accent1);font-size:20px}
     .modal input{width:80%;}
+
+    /* Mobile-specific optimizations */
+    @media (max-width: 768px) {
+      .header {
+        font-size: 16px;
+        padding: 12px;
+      }
+      
+      .powered-by {
+        top: 46px;
+        font-size: 12px;
+        padding: 5px;
+      }
+      
+      .panel-container {
+        margin-top: 70px;
+        height: calc(100vh - 70px);
+      }
+      
+      .msg {
+        max-width: 90%;
+        font-size: 15px;
+        padding: 10px 14px;
+      }
+      
+      .controls-container {
+        padding: 12px;
+      }
+      
+      .button-row {
+        gap: 8px;
+      }
+      
+      .btn {
+        min-width: 80px;
+        padding: 10px 14px;
+        font-size: 14px;
+      }
+      
+      input[type="text"], input[type="password"] {
+        padding: 12px 16px;
+        font-size: 16px; /* Larger for mobile touch */
+      }
+      
+      .scroll-btn {
+        width: 36px;
+        height: 36px;
+        right: 15px;
+        bottom: 140px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -141,156 +385,206 @@
 
   <!-- Main app -->
   <div class="wrap" id="app">
-    <div class="header">✧ X.E.N.O.R.I.S.H Quantum AI ✧</div>
-    <div class="panel">
-      <div id="log" class="log">
-        <!-- Default responses removed -->
+    <div class="header">X.E.N.O.R.I.S.H Quantum AI</div>
+    <div class="powered-by">POWERED BY RISHABH</div>
+    
+    <div class="panel-container">
+      <div class="panel">
+        <div id="log" class="log">
+          <!-- Chat messages will appear here -->
+        </div>
+        <div class="status" id="status">Ready for Quantum Queries.</div>
       </div>
-      <div class="status" id="status">Powered by R.I.S.H.A.B.H — Ready for Quantum Queries.</div>
     </div>
-    <div class="controls">
-      <div class="input">
-        <input id="query" type="text" placeholder="Ask anything..." />
-        <div class="button-row">
-          <button id="ask" class="btn">Ask</button>
-          <button id="clear" class="btn gray">Clear</button>
-          <button id="wipe" class="btn red">Reset Memory</button>
-          <button id="resetApi" class="btn red">Reset API</button>
+    
+    <!-- Modernized controls -->
+    <div class="controls-container">
+      <div class="controls">
+        <div class="input">
+          <input id="query" type="text" placeholder="Ask anything" />
+          <div class="button-row">
+            <button id="ask" class="btn">Ask</button>
+            <button id="clear" class="btn gray">Clear</button>
+            <button id="wipe" class="btn red">Reset Memory</button>
+            <button id="resetApi" class="btn red">Reset API</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
+  
   <div class="scroll-btn" id="scrollBtn">↓</div>
 
   <script>
     // DOM
-    const elApp=document.getElementById("app");
-    const elApiModal=document.getElementById("apiModal");
-    const elApiInput=document.getElementById("apiKeyInput");
-    const elSaveApi=document.getElementById("saveApi");
-    const elResetApi=document.getElementById("resetApi");
+    const elApp = document.getElementById("app");
+    const elApiModal = document.getElementById("apiModal");
+    const elApiInput = document.getElementById("apiKeyInput");
+    const elSaveApi = document.getElementById("saveApi");
+    const elResetApi = document.getElementById("resetApi");
 
-    const elLog=document.getElementById("log");
-    const elQuery=document.getElementById("query");
-    const elAsk=document.getElementById("ask");
-    const elClear=document.getElementById("clear");
-    const elWipe=document.getElementById("wipe");
-    const elStatus=document.getElementById("status");
-    const elScrollBtn=document.getElementById("scrollBtn");
+    const elLog = document.getElementById("log");
+    const elQuery = document.getElementById("query");
+    const elAsk = document.getElementById("ask");
+    const elClear = document.getElementById("clear");
+    const elWipe = document.getElementById("wipe");
+    const elStatus = document.getElementById("status");
+    const elScrollBtn = document.getElementById("scrollBtn");
 
     // State
-    let autoScroll=true;
-    let chatHistory=[];
-    let API_KEY=localStorage.getItem("groq_api_key")||null;
+    let autoScroll = true;
+    let chatHistory = [];
+    let API_KEY = localStorage.getItem("groq_api_key") || null;
 
-    const systemPrompt=`Tum X.E.N.O.R.I.S.H. ho — ek high-level quantum AI assistant, jise Rishabh ne create kiya hai.
-Tumhara interface dark aur futuristic hai. Tumhara kaam hai user ko intelligent, 
-detailed aur helpful responses dena. Tumhara naam X.E.N.O.R.I.S.H. hai, jo ek acronym hai: 
-"Xeno-Entity for Neural Operations, Research, and Intelligent System Handling". 
-Tumhara personality confident, knowledgeable hai. 
-Tum technical aur scientific topics mein expert ho, especially quantum computing, AI, aur advanced technology mein.
-Tum responses ko stylish aur engaging tarike se dena, etc.
-Tum Hindi mein bhi respond kar sakte ho agar user Hindi mein puchen, but primarily English mein respond karna.
-Tumhara responses concise rakhna, but detailed enough to be helpful.`;
+    const systemPrompt = `You are X.E.N.O.R.I.S.H. — a high-level quantum AI assistant created by Rishabh.
+Your job is to give the user intelligent, and helpful responses.
+Your name stands for: "Xeno-Entity for Neural Operations, Research, and Intelligent System Handling."
+Your personality is confident and knowledgeable.
+You are an expert in technical and scientific topics.
+You can also respond in Roman Hindi script if the user asks in Hindi, but primarily respond in English.`;
 
     // Helpers
-    function appendMsg(type,text){
-      const div=document.createElement("div");
-      div.className=`msg ${type}`;
-      div.textContent=text;
+    function appendMsg(type, text) {
+      const div = document.createElement("div");
+      div.className = `msg ${type}`;
+      div.textContent = text;
       elLog.appendChild(div);
-      if(autoScroll)elLog.scrollTo({top:elLog.scrollHeight,behavior:"smooth"});
+      if (autoScroll) scrollToBottom();
     }
 
-    function showTyping(){
-      const wrap=document.createElement("div");
-      wrap.className="typing ai";
-      wrap.id="typing";
-      wrap.innerHTML='<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+    function scrollToBottom() {
+      setTimeout(() => {
+        elLog.scrollTo({ top: elLog.scrollHeight, behavior: "smooth" });
+      }, 100);
+    }
+
+    function showTyping() {
+      const wrap = document.createElement("div");
+      wrap.className = "typing ai";
+      wrap.id = "typing";
+      wrap.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
       elLog.appendChild(wrap);
-      elLog.scrollTo({top:elLog.scrollHeight,behavior:"smooth"});
+      scrollToBottom();
     }
-    function hideTyping(){
-      const t=document.getElementById("typing");
-      if(t)t.remove();
+    
+    function hideTyping() {
+      const t = document.getElementById("typing");
+      if (t) t.remove();
     }
 
-    function setBusy(b){
-      elAsk.disabled=!!b;
-      elStatus.textContent=b?"Thinking…":"Powered by R.I.S.H.A.B.H — Ready for Quantum Queries.";
+    function setBusy(b) {
+      elAsk.disabled = !!b;
+      elStatus.textContent = b ? "Thinking…" : "Ready for Quantum Queries.";
     }
 
     // Ask
-    async function handleAsk(){
-      const q=elQuery.value.trim();
-      if(!q)return;
-      appendMsg("user","You: "+q);
-      elQuery.value="";
-      chatHistory.push({role:"user",content:q});
+    async function handleAsk() {
+      const q = elQuery.value.trim();
+      if (!q) return;
+      appendMsg("user", q);
+      elQuery.value = "";
+      chatHistory.push({ role: "user", content: q });
 
       showTyping();
       setBusy(true);
 
-      try{
-        const reply=await callGroq(API_KEY,[{role:"system",content:systemPrompt},...chatHistory]);
+      try {
+        const reply = await callGroq(API_KEY, [{ role: "system", content: systemPrompt }, ...chatHistory]);
         hideTyping();
-        appendMsg("ai","XENORISH: "+reply.text+"\n⏱ "+(reply.tookMs/1000).toFixed(2)+"s");
-        chatHistory.push({role:"assistant",content:reply.text});
-      }catch(err){
+        // Removed the timing display from the response
+        appendMsg("ai", reply.text);
+        chatHistory.push({ role: "assistant", content: reply.text });
+      } catch (err) {
         hideTyping();
-        appendMsg("alert","ERROR: "+err.message);
-      }finally{
+        appendMsg("alert", "ERROR: " + err.message);
+      } finally {
         setBusy(false);
       }
     }
 
     // API Call
-    async function callGroq(apiKey,messages){
-      const body={model:"llama3-70b-8192",max_tokens:800,messages};
-      const t0=performance.now();
-      const res=await fetch("https://api.groq.com/openai/v1/chat/completions",{
-        method:"POST",
-        headers:{ "Content-Type":"application/json","Authorization":`Bearer ${apiKey}` },
-        body:JSON.stringify(body)
+    async function callGroq(apiKey, messages) {
+      const body = { model: "llama3-70b-8192", max_tokens: 800, messages };
+      const t0 = performance.now();
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+        body: JSON.stringify(body)
       });
-      if(!res.ok)throw new Error(" API error "+res.status);
-      const data=await res.json();
-      const text=data.choices?.[0]?.message?.content||"";
-      return {text,tookMs:performance.now()-t0};
+      if (!res.ok) throw new Error(" API error " + res.status);
+      const data = await res.json();
+      const text = data.choices?.[0]?.message?.content || "";
+      return { text, tookMs: performance.now() - t0 };
     }
 
     // Controls
-    elAsk.onclick=handleAsk;
-    elQuery.onkeydown=(e)=>{if(e.key==="Enter")handleAsk();}
-    elClear.onclick=()=>{elLog.innerHTML="";appendMsg("alert","✧ Chat Cleared ✧");}
-    elWipe.onclick=()=>{chatHistory=[];appendMsg("alert","✧ Memory Reset ✧");}
-    elResetApi.onclick=()=>{localStorage.removeItem("groq_api_key");location.reload();}
+    elAsk.onclick = handleAsk;
+    elQuery.onkeydown = (e) => { if (e.key === "Enter") handleAsk(); }
+    elClear.onclick = () => { elLog.innerHTML = ""; appendMsg("alert", "✧ Chat Cleared ✧"); }
+    elWipe.onclick = () => { chatHistory = []; appendMsg("alert", "✧ Memory Reset ✧"); }
+    elResetApi.onclick = () => { localStorage.removeItem("groq_api_key"); location.reload(); }
 
     // Scroll
-    elLog.addEventListener("scroll",()=>{
-      const atBottom=elLog.scrollTop+elLog.clientHeight>=elLog.scrollHeight-20;
-      autoScroll=atBottom;
-      elScrollBtn.classList.toggle("visible",!atBottom);
+    elLog.addEventListener("scroll", () => {
+      const atBottom = elLog.scrollTop + elLog.clientHeight >= elLog.scrollHeight - 20;
+      autoScroll = atBottom;
+      elScrollBtn.classList.toggle("visible", !atBottom);
     });
-    elScrollBtn.onclick=()=>{autoScroll=true;elLog.scrollTo({top:elLog.scrollHeight,behavior:"smooth"});}
+    
+    elScrollBtn.onclick = () => { 
+      autoScroll = true; 
+      scrollToBottom(); 
+    }
+
+    // Mobile touch improvements
+    let touchStartY = 0;
+    elLog.addEventListener('touchstart', function(e) {
+      touchStartY = e.touches[0].clientY;
+    }, {passive: true});
+
+    elLog.addEventListener('touchmove', function(e) {
+      // Enable native scrolling
+    }, {passive: true});
 
     // Modal logic
-    elSaveApi.onclick=()=>{
-      const key=elApiInput.value.trim();
-      if(!key)return alert("Please enter API key");
-      localStorage.setItem("groq_api_key",key);
-      API_KEY=key;
-      elApiModal.style.display="none";
-      elApp.style.display="flex";
+    elSaveApi.onclick = () => {
+      const key = elApiInput.value.trim();
+      if (!key) return alert("Please enter API key");
+      localStorage.setItem("groq_api_key", key);
+      API_KEY = key;
+      elApiModal.style.display = "none";
+      elApp.style.display = "flex";
     };
 
     // Init
-    if(API_KEY){
-      elApiModal.style.display="none";
-      elApp.style.display="flex";
+    if (API_KEY) {
+      elApiModal.style.display = "none";
+      elApp.style.display = "flex";
     } else {
       // Show the app even without API key for demo purposes
-      elApp.style.display="flex";
+      elApp.style.display = "flex";
+    }
+
+    // Add a welcome message
+    setTimeout(() => {
+      appendMsg("ai", "Hi, I'm X.E.N.O.R.I.S.H. How can I assist you?");
+    }, 500);
+
+    // Mobile-specific initialization
+    if ('ontouchstart' in window) {
+      // Add touch-friendly class for mobile
+      document.body.classList.add('is-mobile');
+      
+      // Make inputs more touch-friendly
+      const inputs = document.querySelectorAll('input');
+      inputs.forEach(input => {
+        input.addEventListener('focus', () => {
+          setTimeout(() => {
+            // Scroll to input when focused on mobile
+            input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 300);
+        });
+      });
     }
   </script>
 </body>
